@@ -29,6 +29,9 @@ public:
   */
   MatrixXd CalculateJacobian(const VectorXd& x_state);
 
+  /**
+   * Normalizes the given angle. The result is always between -PI and PI
+   */
   double NormAngleRad(double angle);
 };
 
