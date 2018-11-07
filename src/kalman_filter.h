@@ -18,10 +18,19 @@ public:
   Eigen::MatrixXd Q_;
 
   // measurement matrix
-  Eigen::MatrixXd H_;
+  Eigen::MatrixXd H_laser_;
 
-  // measurement covariance matrix
-  Eigen::MatrixXd R_;
+  // transposed measurement matrix
+  Eigen::MatrixXd H_laser_T_;
+
+  // measurement covariance matrix - laser
+  Eigen::MatrixXd R_laser_;
+
+  // measurement covariance matrix - radar
+  Eigen::MatrixXd R_radar_;
+
+  // identity matrix
+  Eigen::MatrixXd I_;
 
   /**
    * Constructor
@@ -42,15 +51,14 @@ public:
    * @param R_in Measurement covariance matrix
    * @param Q_in Process covariance matrix
    */
-  void Init(Eigen::VectorXd &x_in, Eigen::MatrixXd &P_in, Eigen::MatrixXd &F_in,
-      Eigen::MatrixXd &H_in, Eigen::MatrixXd &R_in, Eigen::MatrixXd &Q_in);
+  void Init(Eigen::VectorXd &x_in, Eigen::MatrixXd &P_in);
 
   /**
    * Prediction Predicts the state and the state covariance
    * using the process model
-   * @param delta_T Time between k and k+1 in s
+   * @param dt Time between k and k+1 in s
    */
-  void Predict();
+  void Predict(float dt);
 
   /**
    * Updates the state by using standard Kalman Filter equations
