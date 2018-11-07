@@ -1,4 +1,5 @@
 #include "kalman_filter.h"
+#include <iostream>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -6,7 +7,9 @@ using Eigen::VectorXd;
 // Please note that the Eigen library does not initialize
 // VectorXd or MatrixXd objects with zeros upon creation.
 
-KalmanFilter::KalmanFilter() {}
+KalmanFilter::KalmanFilter() {
+  tools = Tools();
+}
 
 KalmanFilter::~KalmanFilter() {}
 
@@ -93,8 +96,44 @@ void KalmanFilter::Update(const VectorXd &z) {
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
-  /**
-  TODO:
-    * update the state by using Extended Kalman Filter equations
-  */
+  std::cout << "1" << std::endl;
+  VectorXd h = h_radar();
+
+  std::cout << "2" << std::endl;
+  VectorXd y = z - h;
+  // TODO: normalize phi (-pi .. pi)
+
+  std::cout << "3" << std::endl;
+  MatrixXd Hj = tools.CalculateJacobian(x_);
+  MatrixXd Hj_T = Hj.transpose();
+
+  std::cout << "4" << std::endl;
+  MatrixXd S = Hj * P_ * Hj_T + R_radar_;
+  MatrixXd K = P_ * Hj_T * S.inverse();
+
+  std::cout << "5" << std::endl;
+  x_ = x_ + K * y;
+  P_ = (I_ - K * Hj) * P_;
+}
+
+VectorXd KalmanFilter::h_radar() {
+  VectorXd ret(3);
+
+  float px = x_(0);
+  float py = x_(1);
+  float vx = x_(2);
+  float vy = x_(3);
+
+  if (abs(px * py) < 0.000001) {
+    std::cout << "h_radar(): value of px/py is too low";
+    throw "h_radar(): value of px/py is too low";
+  }
+
+  float h1 = sqrt(px*px + py*py);
+  float h2 = atan2(py, px);
+  float h3 = (px*vx + py*vy) / h1;
+
+  ret << h1, h2, h3;
+
+  return ret;
 }

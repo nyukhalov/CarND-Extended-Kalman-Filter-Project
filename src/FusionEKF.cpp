@@ -17,12 +17,6 @@ FusionEKF::FusionEKF() {
 
   ekf_ = KalmanFilter();
   tools = Tools();
-
-  /**
-  TODO:
-    * Finish initializing the FusionEKF.
-    * Set the process and measurement noises
-  */
 }
 
 /**
@@ -39,24 +33,30 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    *  Initialization
    ****************************************************************************/
   if (!is_initialized_) {
-    // first measurement
-    cout << "EKF: " << endl;
     VectorXd init_state(4);
     MatrixXd init_P(4, 4);
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
+      cout << "Initializing state using radar measurement" << endl;
       // Convert radar from polar to cartesian coordinates and initialize state.
-      init_state << 1, 1, 1, 1;
+      float range = measurement_pack.raw_measurements_(0);
+      float bearing = measurement_pack.raw_measurements_(1);
+
+      float px = range * cos(bearing);
+      float py = range * sin(bearing);
+
+      init_state << px, py, 0, 0;
       init_P << 1, 0, 0,    0,
                 0, 1, 0,    0,
                 0, 0, 1000, 0,
                 0, 0, 0, 1000;
    }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
+      cout << "Initializing state using laser measurement" << endl;
       float px = measurement_pack.raw_measurements_(0);
       float py = measurement_pack.raw_measurements_(1);
-      init_state << px, py, 0, 0;
 
+      init_state << px, py, 0, 0;
       init_P << 1, 0, 0,    0,
                 0, 1, 0,    0,
                 0, 0, 1000, 0,
@@ -75,6 +75,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    ****************************************************************************/
 
   float dt = elapsed / 1000000.0;
+  cout << "Elapsed sec: " << dt << endl;
+  cout << "Predict state" << endl;
   ekf_.Predict(dt);
 
   /*****************************************************************************
@@ -83,9 +85,11 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // Radar updates
+    cout << "Update radar" << endl;
     ekf_.UpdateEKF(measurement_pack.raw_measurements_);
   } else {
     // Laser updates
+    cout << "Update laser" << endl;
     ekf_.Update(measurement_pack.raw_measurements_);
   }
 
