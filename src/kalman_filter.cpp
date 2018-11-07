@@ -39,6 +39,7 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in) {
               0, 0.0009,    0,
               0,      0, 0.09;
 
+  //process covariance matrix
   Q_ = MatrixXd(4, 4);
   Q_ << 0, 0, 0, 0,
         0, 0, 0, 0,
@@ -48,13 +49,13 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in) {
   I_ = MatrixXd::Identity(4, 4);
 }
 
-void KalmanFilter::Predict(float dt) {
+void KalmanFilter::Predict(double dt) {
   float noise_ax = 9;
   float noise_ay = 9;
 
-  float dt2 = dt * dt;
-  float dt3 = dt2 * dt;
-  float dt4 = dt2 * dt2;
+  double dt2 = dt * dt;
+  double dt3 = dt2 * dt;
+  double dt4 = dt2 * dt2;
 
   // updating process noise matrix
   Q_(0, 0) = noise_ax * dt4 / 4.0;
@@ -114,23 +115,21 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 }
 
 VectorXd KalmanFilter::h_radar() {
-  VectorXd ret(3);
-
-  float px = x_(0);
-  float py = x_(1);
-  float vx = x_(2);
-  float vy = x_(3);
+  double px = x_(0);
+  double py = x_(1);
+  double vx = x_(2);
+  double vy = x_(3);
 
   if (abs(px * py) < 0.000001) {
     std::cout << "h_radar(): value of px/py is too low";
     throw "h_radar(): value of px/py is too low";
   }
 
-  float h1 = sqrt(px*px + py*py);
-  float h2 = atan2(py, px);
-  float h3 = (px*vx + py*vy) / h1;
+  double h1 = sqrt(px*px + py*py);
+  double h2 = atan2(py, px);
+  double h3 = (px*vx + py*vy) / h1;
 
+  VectorXd ret(3);
   ret << h1, h2, h3;
-
   return ret;
 }

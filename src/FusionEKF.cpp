@@ -26,6 +26,7 @@ FusionEKF::~FusionEKF() {}
 
 void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
+  // Updating timestamp
   long long elapsed = measurement_pack.timestamp_ - previous_timestamp_;
   previous_timestamp_ = measurement_pack.timestamp_;
 

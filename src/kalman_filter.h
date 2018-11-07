@@ -12,7 +12,44 @@ public:
   // state covariance matrix
   Eigen::MatrixXd P_;
 
-  // state transition matrix
+  /**
+   * Constructor
+   */
+  KalmanFilter();
+
+  /**
+   * Destructor
+   */
+  virtual ~KalmanFilter();
+
+  /**
+   * Init Initializes Kalman filter
+   * @param x_in Initial state
+   * @param P_in Initial state covariance
+   */
+  void Init(Eigen::VectorXd &x_in, Eigen::MatrixXd &P_in);
+
+  /**
+   * Prediction Predicts the state and the state covariance
+   * using the process model
+   * @param dt Time between k and k+1 in s
+   */
+  void Predict(double dt);
+
+  /**
+   * Updates the state by using standard Kalman Filter equations
+   * @param z The measurement at k+1
+   */
+  void Update(const Eigen::VectorXd &z);
+
+  /**
+   * Updates the state by using Extended Kalman Filter equations
+   * @param z The measurement at k+1
+   */
+  void UpdateEKF(const Eigen::VectorXd &z);
+
+private:
+   // state transition matrix
   Eigen::MatrixXd F_;
 
   // process covariance matrix
@@ -33,47 +70,6 @@ public:
   // identity matrix
   Eigen::MatrixXd I_;
 
-  /**
-   * Constructor
-   */
-  KalmanFilter();
-
-  /**
-   * Destructor
-   */
-  virtual ~KalmanFilter();
-
-  /**
-   * Init Initializes Kalman filter
-   * @param x_in Initial state
-   * @param P_in Initial state covariance
-   * @param F_in Transition matrix
-   * @param H_in Measurement matrix
-   * @param R_in Measurement covariance matrix
-   * @param Q_in Process covariance matrix
-   */
-  void Init(Eigen::VectorXd &x_in, Eigen::MatrixXd &P_in);
-
-  /**
-   * Prediction Predicts the state and the state covariance
-   * using the process model
-   * @param dt Time between k and k+1 in s
-   */
-  void Predict(float dt);
-
-  /**
-   * Updates the state by using standard Kalman Filter equations
-   * @param z The measurement at k+1
-   */
-  void Update(const Eigen::VectorXd &z);
-
-  /**
-   * Updates the state by using Extended Kalman Filter equations
-   * @param z The measurement at k+1
-   */
-  void UpdateEKF(const Eigen::VectorXd &z);
-
-private:
   Tools tools;
 
   Eigen::VectorXd h_radar();
