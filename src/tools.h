@@ -29,6 +29,7 @@ public:
   */
   MatrixXd CalculateJacobian(const VectorXd& x_state);
 
+  double NormAngleRad(double angle);
 };
 
 #endif /* TOOLS_H_ */

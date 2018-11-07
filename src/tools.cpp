@@ -48,7 +48,10 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   float pxy2 = px2 + py2;
   float sqrt_pxy2 = sqrt(pxy2);
 
-  if (pxy2 < 0.0001) throw "Low x or y value";
+  if (pxy2 < 0.000001) {
+    std::cout << "Low x or y value" << std::endl;
+    throw "Low x or y value";
+  }
 
   float e11 = px / sqrt_pxy2;
   float e12 = py / sqrt_pxy2;
@@ -67,4 +70,13 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
         e31, e32, e33, e34;
 
   return Hj;
+}
+
+double Tools::NormAngleRad(double angle) {
+  if (angle < 0) {
+    while(angle < -M_PI) angle += 2 * M_PI;
+  } else {
+    while(angle > M_PI) angle -= 2 * M_PI;
+  }
+  return angle;
 }

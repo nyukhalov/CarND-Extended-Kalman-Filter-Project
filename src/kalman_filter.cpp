@@ -96,22 +96,19 @@ void KalmanFilter::Update(const VectorXd &z) {
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
-  std::cout << "1" << std::endl;
   VectorXd h = h_radar();
-
-  std::cout << "2" << std::endl;
   VectorXd y = z - h;
-  // TODO: normalize phi (-pi .. pi)
 
-  std::cout << "3" << std::endl;
+  double phi = y(1);
+  double phi_norm = tools.NormAngleRad(phi);
+  y(1) = phi_norm;
+
   MatrixXd Hj = tools.CalculateJacobian(x_);
   MatrixXd Hj_T = Hj.transpose();
 
-  std::cout << "4" << std::endl;
   MatrixXd S = Hj * P_ * Hj_T + R_radar_;
   MatrixXd K = P_ * Hj_T * S.inverse();
 
-  std::cout << "5" << std::endl;
   x_ = x_ + K * y;
   P_ = (I_ - K * Hj) * P_;
 }
