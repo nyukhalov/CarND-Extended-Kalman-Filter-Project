@@ -1,5 +1,4 @@
 #include "FusionEKF.h"
-#include "tools.h"
 #include "Eigen/Dense"
 #include <iostream>
 
@@ -16,7 +15,6 @@ FusionEKF::FusionEKF() {
   previous_timestamp_ = 0;
 
   ekf_ = KalmanFilter();
-  tools = Tools();
 }
 
 /**
